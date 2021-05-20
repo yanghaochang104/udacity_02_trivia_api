@@ -48,7 +48,7 @@ class QuizView extends Component {
     if(this.state.currentQuestion.id) { previousQuestions.push(this.state.currentQuestion.id) }
 
     $.ajax({
-      url: '/quizzes', //TODO: update request URL
+      url: '/play/quizzes', //TODO: update request URL
       type: "POST",
       dataType: 'json',
       contentType: 'application/json',
@@ -70,7 +70,12 @@ class QuizView extends Component {
         })
         return;
       },
-      error: (error) => {
+      error: (xhr) => {
+        const response = JSON.parse(xhr.responseText)
+        if (response.message == 'No More Questions'){
+          this.renderFinalScore()
+          return;
+        }
         alert('Unable to load question. Please try your request again')
         return;
       }
