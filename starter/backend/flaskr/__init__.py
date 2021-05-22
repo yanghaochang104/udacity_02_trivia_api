@@ -46,7 +46,7 @@ def create_app(test_config=None):
                 'success': True,
                 'categories': formatted_categories,
             })
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/questions', methods=['GET'])
@@ -78,7 +78,7 @@ def create_app(test_config=None):
             })
         except NotFound:
             abort(404)
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/questions/<int:question_id>', methods=['DELETE'])
@@ -98,7 +98,7 @@ def create_app(test_config=None):
             })
         except NotFound:
             abort(404)
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/add/questions', methods=['POST'])
@@ -117,7 +117,7 @@ def create_app(test_config=None):
                 'success': True,
                 'message': 'Question Added'
             }), 201
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/questions', methods=['POST'])
@@ -137,7 +137,7 @@ def create_app(test_config=None):
                 'total_questions': len(formatted_target_question),
                 'current_category': len(formatted_target_question) > 0 and formatted_target_question[0]['category'],
             })
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/categories/<int:category_id>/questions', methods=['GET'])
@@ -166,7 +166,7 @@ def create_app(test_config=None):
             })
         except NotFound:
             abort(404)
-        except:
+        except Exception:
             abort(422)
 
     @app.route('/play/quizzes', methods=['POST'])
@@ -200,7 +200,7 @@ def create_app(test_config=None):
                 'success': False,
                 'message': 'No More Questions'
             })
-        except:
+        except Exception:
             abort(422)
 
     @app.errorhandler(404)
@@ -219,4 +219,20 @@ def create_app(test_config=None):
             'message': 'Unprocessable'
         }), 422
 
+    @app.errorhandler(400)
+    def bad_requeset(error):
+        return jsonify({
+            'success': False,
+            'error': 400,
+            'message': 'Bad Request'
+        }), 400
+    
+    @app.errorhandler(405)
+    def method_not_found(error):
+        return jsonify({
+            'success': False,
+            'error': 405,
+            'message': 'Method Not Found'
+        }), 405
+    
     return app
