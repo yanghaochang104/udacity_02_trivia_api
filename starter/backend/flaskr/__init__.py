@@ -129,7 +129,7 @@ def create_app(test_config=None):
             searchTerm = body.get('searchTerm', None)
             if searchTerm is not '':
                 target_questions = Question.query.filter(
-                    Question.question.like('%{}%'.format(searchTerm))).all()
+                    Question.question.ilike('%{}%'.format(searchTerm))).all()
                 formatted_target_question = [
                     target_question.format() for target_question in target_questions]
             return jsonify({
