@@ -20,6 +20,17 @@ class NoMoreQuestions(Exception):
     pass
 
 
+def paginate_questions(request, selection):
+    page = request.args.get('page', 1, type=int)
+    start = (page-1) * QUESTIONS_PER_PAGE
+    end = start + QUESTIONS_PER_PAGE
+
+    questions = [question.format() for question in selection]
+    current_questions = questions[start:end]
+
+    return current_questions
+
+
 def create_app(test_config=None):
     # create and configure the app
     app = Flask(__name__)
@@ -54,13 +65,9 @@ def create_app(test_config=None):
     def get_questions():
         try:
             # pagination
-            page = request.args.get('page', 1, type=int)
-            start = (page-1) * 10
-            end = page * 10
-
             questions = Question.query.all()
-            formatted_questions = [question.format() for question in questions]
-            current_formatted_questions = formatted_questions[start:end]
+            current_formatted_questions = paginate_questions(
+                request, questions)
 
             if len(current_formatted_questions) == 0:
                 raise NotFound
@@ -72,7 +79,7 @@ def create_app(test_config=None):
             return jsonify({
                 'success': True,
                 'questions': current_formatted_questions,
-                'total_questions': len(formatted_questions),
+                'total_questions': len(questions),
                 'categories': formatted_categories,
                 'current_category': 0
             })
@@ -154,14 +161,13 @@ def create_app(test_config=None):
                 Question.category == target_category.id).all()
 
             # pagination
-            page = request.args.get('page', 1, type=int)
-            start = (page-1) * 10
-            end = page * 10
-            formatted_questions = [question.format() for question in questions]
+            current_formatted_questions = paginate_questions(
+                request, questions)
+
             return jsonify({
                 'success': True,
-                'questions': formatted_questions[start:end],
-                'total_questions': len(formatted_questions),
+                'questions': current_formatted_questions,
+                'total_questions': len(questions),
                 'current_category': target_category.id
             })
         except NotFound:
@@ -226,7 +232,7 @@ def create_app(test_config=None):
             'error': 400,
             'message': 'Bad Request'
         }), 400
-    
+
     @app.errorhandler(405)
     def method_not_found(error):
         return jsonify({
@@ -234,5 +240,5 @@ def create_app(test_config=None):
             'error': 405,
             'message': 'Method Not Found'
         }), 405
-    
+
     return app
