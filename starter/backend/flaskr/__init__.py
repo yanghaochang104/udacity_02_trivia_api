@@ -118,7 +118,8 @@ def create_app(test_config=None):
             category = body.get('category', None)
             difficulty = body.get('difficulty', None)
             new_question = Question(
-                question=question, answer=answer, category=category, difficulty=difficulty)
+                question=question, answer=answer, category=category,
+                difficulty=difficulty)
             new_question.insert()
             return jsonify({
                 'success': True,
@@ -138,11 +139,14 @@ def create_app(test_config=None):
                 target_questions = Question.query.filter(
                     Question.question.ilike('%{}%'.format(searchTerm))).all()
                 formatted_target_question = [
-                    target_question.format() for target_question in target_questions]
+                    target_question.format()
+                    for target_question in target_questions
+                ]
             return jsonify({
                 'questions': formatted_target_question,
                 'total_questions': len(formatted_target_question),
-                'current_category': len(formatted_target_question) > 0 and formatted_target_question[0]['category'],
+                'current_category': len(formatted_target_question) > 0 and
+                formatted_target_question[0]['category'],
             })
         except Exception:
             abort(422)
@@ -201,7 +205,7 @@ def create_app(test_config=None):
                 'question': formatted_unshown_question
             })
         except NoMoreQuestions:
-            # custom exception, return special message to frontend to end the quiz
+            # custom exception, return special message to end the quiz
             return jsonify({
                 'success': False,
                 'message': 'No More Questions'

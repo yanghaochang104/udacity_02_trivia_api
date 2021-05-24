@@ -28,7 +28,7 @@ class TriviaTestCase(unittest.TestCase):
         }
 
         # binds the app to the current context
-        with self.app.app_context(): 
+        with self.app.app_context():
             self.db = SQLAlchemy()
             self.db.init_app(self.app)
             # create all tables
@@ -38,10 +38,6 @@ class TriviaTestCase(unittest.TestCase):
         """Executed after reach test"""
         pass
 
-    """
-    TODO
-    Write at least one test for each test for successful operation and for expected errors.
-    """
     # test get categories
 
     def test_get_categories(self):
@@ -125,7 +121,11 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_get_next_question(self):
         response = self.client().post(
-            '/play/quizzes', json={"previous_question": [1, 2, 3, 4], "quiz_category": {"type": "History", "id": 3}})
+            '/play/quizzes', json={"previous_question": [1, 2, 3, 4],
+                                   "quiz_category": {
+                                       "type": "History", "id": 3
+            }
+            })
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(data['success'], True)
@@ -133,7 +133,10 @@ class TriviaTestCase(unittest.TestCase):
 
     def test_422_get_next_question(self):
         response = self.client().post(
-            '/play/quizzes', json={"previous_question": [2, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33], "quiz_category": 3})
+            '/play/quizzes', json={"previous_question": [
+                2, 4, 5, 6, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+                22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33
+            ], "quiz_category": 3})
         data = json.loads(response.data)
         self.assertEqual(response.status_code, 422)
         self.assertEqual(data['success'], False)
